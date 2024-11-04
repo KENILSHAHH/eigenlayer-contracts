@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.12;
 
-import "@openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
-import "@openzeppelin-upgrades/contracts/security/ReentrancyGuardUpgradeable.sol";
+import "openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
+import "openzeppelin-upgrades/contracts/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "../libraries/BeaconChainProofs.sol";
@@ -134,11 +134,9 @@ contract EigenPod is Initializable, ReentrancyGuardUpgradeable, EigenPodPausingC
      * @param revertIfNoBalance Forces a revert if the pod ETH balance is 0. This allows the pod owner
      * to prevent accidentally starting a checkpoint that will not increase their shares
      */
-    function startCheckpoint(bool revertIfNoBalance)
-        external
-        onlyOwnerOrProofSubmitter
-        onlyWhenNotPaused(PAUSED_START_CHECKPOINT)
-    {
+    function startCheckpoint(
+        bool revertIfNoBalance
+    ) external onlyOwnerOrProofSubmitter onlyWhenNotPaused(PAUSED_START_CHECKPOINT) {
         _startCheckpoint(revertIfNoBalance);
     }
 
@@ -239,8 +237,8 @@ contract EigenPod is Initializable, ReentrancyGuardUpgradeable, EigenPodPausingC
         bytes32[][] calldata validatorFields
     ) external onlyOwnerOrProofSubmitter onlyWhenNotPaused(PAUSED_EIGENPODS_VERIFY_CREDENTIALS) {
         require(
-            (validatorIndices.length == validatorFieldsProofs.length)
-                && (validatorFieldsProofs.length == validatorFields.length),
+            (validatorIndices.length == validatorFieldsProofs.length) &&
+                (validatorFieldsProofs.length == validatorFields.length),
             "EigenPod.verifyWithdrawalCredentials: validatorIndices and proofs must be same length"
         );
 
@@ -335,7 +333,10 @@ contract EigenPod is Initializable, ReentrancyGuardUpgradeable, EigenPodPausingC
         );
 
         // Validator must be checkpoint-able
-        require(validatorInfo.status == VALIDATOR_STATUS.ACTIVE, "EigenPod.verifyStaleBalance: validator is not active");
+        require(
+            validatorInfo.status == VALIDATOR_STATUS.ACTIVE,
+            "EigenPod.verifyStaleBalance: validator is not active"
+        );
 
         // Validator must be slashed on the beacon chain
         require(
@@ -520,8 +521,9 @@ contract EigenPod is Initializable, ReentrancyGuardUpgradeable, EigenPodPausingC
         // purpose of `lastCheckpointedAt` is to enforce that newly-verified validators are not
         // eligible to progress already-existing checkpoints - however in this case, no checkpoints exist.
         activeValidatorCount++;
-        uint64 lastCheckpointedAt =
-            currentCheckpointTimestamp == 0 ? lastCheckpointTimestamp : currentCheckpointTimestamp;
+        uint64 lastCheckpointedAt = currentCheckpointTimestamp == 0
+            ? lastCheckpointTimestamp
+            : currentCheckpointTimestamp;
 
         // Proofs complete - create the validator in state
         _validatorPubkeyHashToInfo[pubkeyHash] = ValidatorInfo({
@@ -555,10 +557,7 @@ contract EigenPod is Initializable, ReentrancyGuardUpgradeable, EigenPodPausingC
         // Calculate change in the validator's balance since the last proof
         if (newBalanceGwei != prevBalanceGwei) {
             // forgefmt: disable-next-item
-            balanceDeltaGwei = _calcBalanceDelta({
-                newAmountGwei: newBalanceGwei,
-                previousAmountGwei: prevBalanceGwei
-            });
+            balanceDeltaGwei = _calcBalanceDelta({newAmountGwei: newBalanceGwei, previousAmountGwei: prevBalanceGwei});
 
             emit ValidatorBalanceUpdated(validatorIndex, checkpointTimestamp, newBalanceGwei);
         }
@@ -653,8 +652,8 @@ contract EigenPod is Initializable, ReentrancyGuardUpgradeable, EigenPodPausingC
      */
     function _updateCheckpoint(Checkpoint memory checkpoint) internal {
         if (checkpoint.proofsRemaining == 0) {
-            int256 totalShareDeltaWei =
-                (int128(uint128(checkpoint.podBalanceGwei)) + checkpoint.balanceDeltasGwei) * int256(GWEI_TO_WEI);
+            int256 totalShareDeltaWei = (int128(uint128(checkpoint.podBalanceGwei)) + checkpoint.balanceDeltasGwei) *
+                int256(GWEI_TO_WEI);
 
             // Add any native ETH in the pod to `withdrawableRestakedExecutionLayerGwei`
             // ... this amount can be withdrawn via the `DelegationManager` withdrawal queue
@@ -679,7 +678,10 @@ contract EigenPod is Initializable, ReentrancyGuardUpgradeable, EigenPodPausingC
 
     ///@notice Calculates the pubkey hash of a validator's pubkey as per SSZ spec
     function _calculateValidatorPubkeyHash(bytes memory validatorPubkey) internal pure returns (bytes32) {
-        require(validatorPubkey.length == 48, "EigenPod._calculateValidatorPubkeyHash must be a 48-byte BLS public key");
+        require(
+            validatorPubkey.length == 48,
+            "EigenPod._calculateValidatorPubkeyHash must be a 48-byte BLS public key"
+        );
         return sha256(abi.encodePacked(validatorPubkey, bytes16(0)));
     }
 

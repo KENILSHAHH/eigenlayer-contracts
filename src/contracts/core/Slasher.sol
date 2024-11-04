@@ -5,8 +5,8 @@ import "../interfaces/ISlasher.sol";
 import "../interfaces/IDelegationManager.sol";
 import "../interfaces/IStrategyManager.sol";
 import "../permissions/Pausable.sol";
-import "@openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
-import "@openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
+import "openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
+import "openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
 
 /**
  * @notice This contract is not in use as of the Eigenlayer M2 release.

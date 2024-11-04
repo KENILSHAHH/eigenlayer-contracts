@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.12;
 
-import "@openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
-import "@openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
-import "@openzeppelin-upgrades/contracts/security/ReentrancyGuardUpgradeable.sol";
+import "openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
+import "openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
+import "openzeppelin-upgrades/contracts/security/ReentrancyGuardUpgradeable.sol";
 import "../permissions/Pausable.sol";
 import "../libraries/EIP1271SignatureUtils.sol";
 import "./DelegationManagerStorage.sol";
@@ -149,13 +149,18 @@ contract DelegationManager is
         );
         require(!isDelegated(staker), "DelegationManager.delegateToBySignature: staker is already actively delegated");
         require(
-            isOperator(operator), "DelegationManager.delegateToBySignature: operator is not registered in EigenLayer"
+            isOperator(operator),
+            "DelegationManager.delegateToBySignature: operator is not registered in EigenLayer"
         );
 
         // calculate the digest hash, then increment `staker`'s nonce
         uint256 currentStakerNonce = stakerNonce[staker];
-        bytes32 stakerDigestHash =
-            calculateStakerDelegationDigestHash(staker, currentStakerNonce, operator, stakerSignatureAndExpiry.expiry);
+        bytes32 stakerDigestHash = calculateStakerDelegationDigestHash(
+            staker,
+            currentStakerNonce,
+            operator,
+            stakerSignatureAndExpiry.expiry
+        );
         unchecked {
             stakerNonce[staker] = currentStakerNonce + 1;
         }
@@ -168,18 +173,17 @@ contract DelegationManager is
     }
 
     /// @inheritdoc IDelegationManager
-    function undelegate(address staker)
-        external
-        onlyWhenNotPaused(PAUSED_ENTER_WITHDRAWAL_QUEUE)
-        returns (bytes32[] memory withdrawalRoots)
-    {
+    function undelegate(
+        address staker
+    ) external onlyWhenNotPaused(PAUSED_ENTER_WITHDRAWAL_QUEUE) returns (bytes32[] memory withdrawalRoots) {
         require(isDelegated(staker), "DelegationManager.undelegate: staker must be delegated to undelegate");
         require(!isOperator(staker), "DelegationManager.undelegate: operators cannot be undelegated");
         require(staker != address(0), "DelegationManager.undelegate: cannot undelegate zero address");
         address operator = delegatedTo[staker];
         require(
-            msg.sender == staker || msg.sender == operator
-                || msg.sender == _operatorDetails[operator].delegationApprover,
+            msg.sender == staker ||
+                msg.sender == operator ||
+                msg.sender == _operatorDetails[operator].delegationApprover,
             "DelegationManager.undelegate: caller cannot undelegate staker"
         );
 
@@ -221,11 +225,9 @@ contract DelegationManager is
     }
 
     /// @inheritdoc IDelegationManager
-    function queueWithdrawals(QueuedWithdrawalParams[] calldata queuedWithdrawalParams)
-        external
-        onlyWhenNotPaused(PAUSED_ENTER_WITHDRAWAL_QUEUE)
-        returns (bytes32[] memory)
-    {
+    function queueWithdrawals(
+        QueuedWithdrawalParams[] calldata queuedWithdrawalParams
+    ) external onlyWhenNotPaused(PAUSED_ENTER_WITHDRAWAL_QUEUE) returns (bytes32[] memory) {
         bytes32[] memory withdrawalRoots = new bytes32[](queuedWithdrawalParams.length);
         address operator = delegatedTo[msg.sender];
 
@@ -302,12 +304,7 @@ contract DelegationManager is
 
             // forgefmt: disable-next-item
             // subtract strategy shares from delegate's shares
-            _decreaseOperatorShares({
-                operator: operator, 
-                staker: staker, 
-                strategy: strategy, 
-                shares: shares
-            });
+            _decreaseOperatorShares({operator: operator, staker: staker, strategy: strategy, shares: shares});
         }
     }
 
@@ -390,18 +387,18 @@ contract DelegationManager is
             // forgefmt: disable-next-item
             // calculate the digest hash
             bytes32 approverDigestHash = calculateDelegationApprovalDigestHash(
-                staker, 
-                operator, 
-                _delegationApprover, 
-                approverSalt, 
+                staker,
+                operator,
+                _delegationApprover,
+                approverSalt,
                 approverSignatureAndExpiry.expiry
             );
 
             // forgefmt: disable-next-item
             // actually check that the signature is valid
             EIP1271SignatureUtils.checkSignature_EIP1271(
-                _delegationApprover, 
-                approverDigestHash, 
+                _delegationApprover,
+                approverDigestHash,
                 approverSignatureAndExpiry.signature
             );
         }
@@ -412,14 +409,9 @@ contract DelegationManager is
 
         (IStrategy[] memory strategies, uint256[] memory shares) = getDelegatableShares(staker);
 
-        for (uint256 i = 0; i < strategies.length;) {
+        for (uint256 i = 0; i < strategies.length; ) {
             // forgefmt: disable-next-item
-            _increaseOperatorShares({
-                operator: operator, 
-                staker: staker, 
-                strategy: strategies[i], 
-                shares: shares[i]
-            });
+            _increaseOperatorShares({operator: operator, staker: staker, strategy: strategies[i], shares: shares[i]});
 
             unchecked {
                 ++i;
@@ -434,13 +426,14 @@ contract DelegationManager is
     function _completeQueuedWithdrawal(
         Withdrawal calldata withdrawal,
         IERC20[] calldata tokens,
-        uint256, /*middlewareTimesIndex*/
+        uint256 /*middlewareTimesIndex*/,
         bool receiveAsTokens
     ) internal {
         bytes32 withdrawalRoot = calculateWithdrawalRoot(withdrawal);
 
         require(
-            pendingWithdrawals[withdrawalRoot], "DelegationManager._completeQueuedWithdrawal: action is not in queue"
+            pendingWithdrawals[withdrawalRoot],
+            "DelegationManager._completeQueuedWithdrawal: action is not in queue"
         );
 
         require(
@@ -466,7 +459,7 @@ contract DelegationManager is
         if (receiveAsTokens) {
             // Finalize action by converting shares to tokens for each strategy, or
             // by re-awarding shares in each strategy.
-            for (uint256 i = 0; i < withdrawal.strategies.length;) {
+            for (uint256 i = 0; i < withdrawal.strategies.length; ) {
                 require(
                     withdrawal.startBlock + strategyWithdrawalDelayBlocks[withdrawal.strategies[i]] <= block.number,
                     "DelegationManager._completeQueuedWithdrawal: withdrawalDelayBlocks period has not yet passed for this strategy"
@@ -487,7 +480,7 @@ contract DelegationManager is
             // Award shares back in StrategyManager/EigenPodManager.
             // If withdrawer is delegated, increase the shares delegated to the operator.
             address currentOperator = delegatedTo[msg.sender];
-            for (uint256 i = 0; i < withdrawal.strategies.length;) {
+            for (uint256 i = 0; i < withdrawal.strategies.length; ) {
                 require(
                     withdrawal.startBlock + strategyWithdrawalDelayBlocks[withdrawal.strategies[i]] <= block.number,
                     "DelegationManager._completeQueuedWithdrawal: withdrawalDelayBlocks period has not yet passed for this strategy"
@@ -503,8 +496,10 @@ contract DelegationManager is
                      * Update shares amount depending upon the returned value.
                      * The return value will be lower than the input value in the case where the staker has an existing share deficit
                      */
-                    uint256 increaseInDelegateableShares =
-                        eigenPodManager.addShares({podOwner: staker, shares: withdrawal.shares[i]});
+                    uint256 increaseInDelegateableShares = eigenPodManager.addShares({
+                        podOwner: staker,
+                        shares: withdrawal.shares[i]
+                    });
                     address podOwnerOperator = delegatedTo[staker];
                     // Similar to `isDelegated` logic
                     if (podOwnerOperator != address(0)) {
@@ -564,20 +559,24 @@ contract DelegationManager is
         uint256[] memory shares
     ) internal returns (bytes32) {
         require(
-            staker != address(0), "DelegationManager._removeSharesAndQueueWithdrawal: staker cannot be zero address"
+            staker != address(0),
+            "DelegationManager._removeSharesAndQueueWithdrawal: staker cannot be zero address"
         );
-        require(strategies.length != 0, "DelegationManager._removeSharesAndQueueWithdrawal: strategies cannot be empty");
+        require(
+            strategies.length != 0,
+            "DelegationManager._removeSharesAndQueueWithdrawal: strategies cannot be empty"
+        );
 
         // Remove shares from staker and operator
         // Each of these operations fail if we attempt to remove more shares than exist
-        for (uint256 i = 0; i < strategies.length;) {
+        for (uint256 i = 0; i < strategies.length; ) {
             // Similar to `isDelegated` logic
             if (operator != address(0)) {
                 // forgefmt: disable-next-item
                 _decreaseOperatorShares({
-                    operator: operator, 
-                    staker: staker, 
-                    strategy: strategies[i], 
+                    operator: operator,
+                    staker: staker,
+                    strategy: strategies[i],
                     shares: shares[i]
                 });
             }
@@ -680,7 +679,9 @@ contract DelegationManager is
             // set the new withdrawal delay blocks
             strategyWithdrawalDelayBlocks[strategy] = newStrategyWithdrawalDelayBlocks;
             emit StrategyWithdrawalDelayBlocksSet(
-                strategy, prevStrategyWithdrawalDelayBlocks, newStrategyWithdrawalDelayBlocks
+                strategy,
+                prevStrategyWithdrawalDelayBlocks,
+                newStrategyWithdrawalDelayBlocks
             );
         }
     }
@@ -726,10 +727,7 @@ contract DelegationManager is
     }
 
     /// @inheritdoc IDelegationManager
-    function getOperatorShares(
-        address operator,
-        IStrategy[] memory strategies
-    ) public view returns (uint256[] memory) {
+    function getOperatorShares(address operator, IStrategy[] memory strategies) public view returns (uint256[] memory) {
         uint256[] memory shares = new uint256[](strategies.length);
         for (uint256 i = 0; i < strategies.length; ++i) {
             shares[i] = operatorShares[operator][strategies[i]];
@@ -741,8 +739,8 @@ contract DelegationManager is
     function getDelegatableShares(address staker) public view returns (IStrategy[] memory, uint256[] memory) {
         // Get currently active shares and strategies for `staker`
         int256 podShares = eigenPodManager.podOwnerShares(staker);
-        (IStrategy[] memory strategyManagerStrats, uint256[] memory strategyManagerShares) =
-            strategyManager.getDeposits(staker);
+        (IStrategy[] memory strategyManagerStrats, uint256[] memory strategyManagerShares) = strategyManager
+            .getDeposits(staker);
 
         // Has no shares in EigenPodManager, but potentially some in StrategyManager
         if (podShares <= 0) {
@@ -766,7 +764,7 @@ contract DelegationManager is
             shares = new uint256[](strategies.length);
 
             // 2. Place StrategyManager strats/shares in return arrays
-            for (uint256 i = 0; i < strategyManagerStrats.length;) {
+            for (uint256 i = 0; i < strategyManagerStrats.length; ) {
                 strategies[i] = strategyManagerStrats[i];
                 shares[i] = strategyManagerShares[i];
 
@@ -820,8 +818,9 @@ contract DelegationManager is
         uint256 expiry
     ) public view returns (bytes32) {
         // calculate the struct hash
-        bytes32 stakerStructHash =
-            keccak256(abi.encode(STAKER_DELEGATION_TYPEHASH, staker, operator, _stakerNonce, expiry));
+        bytes32 stakerStructHash = keccak256(
+            abi.encode(STAKER_DELEGATION_TYPEHASH, staker, operator, _stakerNonce, expiry)
+        );
         // calculate the digest hash
         bytes32 stakerDigestHash = keccak256(abi.encodePacked("\x19\x01", domainSeparator(), stakerStructHash));
         return stakerDigestHash;

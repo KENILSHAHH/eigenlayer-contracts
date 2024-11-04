@@ -2,9 +2,9 @@
 pragma solidity ^0.8.12;
 
 import "@openzeppelin/contracts/utils/Create2.sol";
-import "@openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
-import "@openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
-import "@openzeppelin-upgrades/contracts/security/ReentrancyGuardUpgradeable.sol";
+import "openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
+import "openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
+import "openzeppelin-upgrades/contracts/security/ReentrancyGuardUpgradeable.sol";
 
 import "../permissions/Pausable.sol";
 import "./EigenPodPausingConstants.sol";
@@ -35,7 +35,8 @@ contract EigenPodManager is
 
     modifier onlyDelegationManager() {
         require(
-            msg.sender == address(delegationManager), "EigenPodManager.onlyDelegationManager: not the DelegationManager"
+            msg.sender == address(delegationManager),
+            "EigenPodManager.onlyDelegationManager: not the DelegationManager"
         );
         _;
     }
@@ -105,7 +106,8 @@ contract EigenPodManager is
         int256 sharesDelta
     ) external onlyEigenPod(podOwner) nonReentrant {
         require(
-            podOwner != address(0), "EigenPodManager.recordBeaconChainETHBalanceUpdate: podOwner cannot be zero address"
+            podOwner != address(0),
+            "EigenPodManager.recordBeaconChainETHBalanceUpdate: podOwner cannot be zero address"
         );
         require(
             sharesDelta % int256(GWEI_TO_WEI) == 0,
@@ -180,12 +182,13 @@ contract EigenPodManager is
         emit PodSharesUpdated(podOwner, int256(shares));
         emit NewTotalShares(podOwner, updatedPodOwnerShares);
 
-        return uint256(
-            _calculateChangeInDelegatableShares({
-                sharesBefore: currentPodOwnerShares,
-                sharesAfter: updatedPodOwnerShares
-            })
-        );
+        return
+            uint256(
+                _calculateChangeInDelegatableShares({
+                    sharesBefore: currentPodOwnerShares,
+                    sharesAfter: updatedPodOwnerShares
+                })
+            );
     }
 
     /**
@@ -201,9 +204,15 @@ contract EigenPodManager is
         uint256 shares
     ) external onlyDelegationManager {
         require(podOwner != address(0), "EigenPodManager.withdrawSharesAsTokens: podOwner cannot be zero address");
-        require(destination != address(0), "EigenPodManager.withdrawSharesAsTokens: destination cannot be zero address");
+        require(
+            destination != address(0),
+            "EigenPodManager.withdrawSharesAsTokens: destination cannot be zero address"
+        );
         require(int256(shares) >= 0, "EigenPodManager.withdrawSharesAsTokens: shares cannot be negative");
-        require(shares % GWEI_TO_WEI == 0, "EigenPodManager.withdrawSharesAsTokens: shares must be a whole Gwei amount");
+        require(
+            shares % GWEI_TO_WEI == 0,
+            "EigenPodManager.withdrawSharesAsTokens: shares must be a whole Gwei amount"
+        );
         int256 currentPodOwnerShares = podOwnerShares[podOwner];
 
         // if there is an existing shares deficit, prioritize decreasing the deficit first

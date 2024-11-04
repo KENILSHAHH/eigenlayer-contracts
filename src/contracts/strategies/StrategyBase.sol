@@ -6,7 +6,7 @@ import "../permissions/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
+import "openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
 
 /**
  * @title Base implementation of `IStrategy` interface, designed to be inherited from by more complex strategies.

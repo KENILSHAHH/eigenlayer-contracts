@@ -2,7 +2,7 @@
 pragma solidity ^0.8.12;
 
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
-import "@openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
+import "openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
 import "./StrategyFactoryStorage.sol";
 import "./StrategyBase.sol";
 import "../permissions/Pausable.sol";
@@ -43,11 +43,9 @@ contract StrategyFactory is StrategyFactoryStorage, OwnableUpgradeable, Pausable
      * $dev Immense caution is warranted for non-standard ERC20 tokens, particularly "reentrant" tokens
      * like those that conform to ERC777.
      */
-    function deployNewStrategy(IERC20 token)
-        external
-        onlyWhenNotPaused(PAUSED_NEW_STRATEGIES)
-        returns (IStrategy newStrategy)
-    {
+    function deployNewStrategy(
+        IERC20 token
+    ) external onlyWhenNotPaused(PAUSED_NEW_STRATEGIES) returns (IStrategy newStrategy) {
         require(!isBlacklisted[token], "StrategyFactory.deployNewStrategy: Token is blacklisted");
         require(
             deployedStrategies[token] == IStrategy(address(0)),

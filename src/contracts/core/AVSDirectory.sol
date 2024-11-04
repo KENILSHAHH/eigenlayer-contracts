@@ -1,20 +1,14 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.12;
 
-import "@openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
-import "@openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
-import "@openzeppelin-upgrades/contracts/security/ReentrancyGuardUpgradeable.sol";
+import "openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
+import "openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
+import "openzeppelin-upgrades/contracts/security/ReentrancyGuardUpgradeable.sol";
 import "../permissions/Pausable.sol";
 import "../libraries/EIP1271SignatureUtils.sol";
 import "./AVSDirectoryStorage.sol";
 
-contract AVSDirectory is
-    Initializable,
-    OwnableUpgradeable,
-    Pausable,
-    AVSDirectoryStorage,
-    ReentrancyGuardUpgradeable
-{
+contract AVSDirectory is Initializable, OwnableUpgradeable, Pausable, AVSDirectoryStorage, ReentrancyGuardUpgradeable {
     // @dev Index for flag that pauses operator register/deregister to avs when set.
     uint8 internal constant PAUSED_OPERATOR_REGISTER_DEREGISTER_TO_AVS = 0;
 
@@ -89,8 +83,8 @@ contract AVSDirectory is
         // forgefmt: disable-next-item
         // Check that the signature is valid
         EIP1271SignatureUtils.checkSignature_EIP1271(
-            operator, 
-            operatorRegistrationDigestHash, 
+            operator,
+            operatorRegistrationDigestHash,
             operatorSignature.signature
         );
 
@@ -104,10 +98,9 @@ contract AVSDirectory is
     }
 
     /// @inheritdoc IAVSDirectory
-    function deregisterOperatorFromAVS(address operator)
-        external
-        onlyWhenNotPaused(PAUSED_OPERATOR_REGISTER_DEREGISTER_TO_AVS)
-    {
+    function deregisterOperatorFromAVS(
+        address operator
+    ) external onlyWhenNotPaused(PAUSED_OPERATOR_REGISTER_DEREGISTER_TO_AVS) {
         require(
             avsOperatorStatus[msg.sender][operator] == OperatorAVSRegistrationStatus.REGISTERED,
             "AVSDirectory.deregisterOperatorFromAVS: operator not registered"

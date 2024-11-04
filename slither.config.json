@@ -4,7 +4,7 @@
     "solc_remaps": [
         "forge-std/=lib/forge-std/src/",
         "@openzeppelin/=lib/openzeppelin-contracts/",
-        "@openzeppelin-upgrades/=lib/openzeppelin-contracts-upgradeable/",
+        "openzeppelin-upgrades/=lib/openzeppelin-contracts-upgradeable/",
         "ds-test/=lib/ds-test/src/"
     ],
     "compile_force_framework": "foundry"

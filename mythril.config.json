@@ -2,7 +2,7 @@
     "remappings": [
         "forge-std/=lib/forge-std/src/",
         "@openzeppelin/=lib/openzeppelin-contracts/",
-        "@openzeppelin-upgrades/=lib/openzeppelin-contracts-upgradeable/"
+        "openzeppelin-upgrades/=lib/openzeppelin-contracts-upgradeable/"
     ],
     "optimizer": {
         "enabled": true,
