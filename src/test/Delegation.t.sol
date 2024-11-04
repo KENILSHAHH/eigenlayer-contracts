@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/mocks/ERC1271WalletMock.sol";
+import "openzeppelin/contracts/mocks/ERC1271WalletMock.sol";
 import "src/contracts/interfaces/ISignatureUtils.sol";
 
 import "../test/EigenLayerTestHelper.t.sol";
@@ -102,7 +102,9 @@ contract DelegationTests is EigenLayerTestHelper {
         _testDelegateToOperator(staker, operator);
         assertTrue(delegation.isDelegated(staker) == true, "testDelegation: staker is not delegate");
 
-        (/*IStrategy[] memory updatedStrategies*/, uint256[] memory updatedShares) = strategyManager.getDeposits(staker);
+        (, /*IStrategy[] memory updatedStrategies*/ uint256[] memory updatedShares) = strategyManager.getDeposits(
+            staker
+        );
 
         {
             IStrategy _strat = wethStrat;

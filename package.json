@@ -39,8 +39,8 @@
     "yargs": "^17.7.2"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.7.1",
     "eigenlayer-contracts": "^1.0.1",
+    "openzeppelin": "^1.0.0",
     "openzeppelin-upgrades": "^4.7.0",
     "solidity-docgen": "^0.6.0-beta.32"
   }

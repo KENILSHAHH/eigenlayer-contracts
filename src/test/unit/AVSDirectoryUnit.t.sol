@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/mocks/ERC1271WalletMock.sol";
+import "openzeppelin/contracts/mocks/ERC1271WalletMock.sol";
 
 import "src/contracts/core/DelegationManager.sol";
 import "src/contracts/core/AVSDirectory.sol";
@@ -177,7 +177,10 @@ contract AVSDirectoryUnitTests_operatorAVSRegisterationStatus is AVSDirectoryUni
         avsDirectory.pause(2 ** PAUSED_OPERATOR_REGISTER_DEREGISTER_TO_AVS);
 
         cheats.expectRevert("Pausable: index is paused");
-        avsDirectory.registerOperatorToAVS(address(0), ISignatureUtils.SignatureWithSaltAndExpiry(abi.encodePacked(""), 0, 0));
+        avsDirectory.registerOperatorToAVS(
+            address(0),
+            ISignatureUtils.SignatureWithSaltAndExpiry(abi.encodePacked(""), 0, 0)
+        );
 
         cheats.expectRevert("Pausable: index is paused");
         avsDirectory.deregisterOperatorFromAVS(address(0));
@@ -200,14 +203,21 @@ contract AVSDirectoryUnitTests_operatorAVSRegisterationStatus is AVSDirectoryUni
 
         cheats.expectEmit(true, true, true, true, address(avsDirectory));
         emit OperatorAVSRegistrationStatusUpdated(
-            operator, defaultAVS, IAVSDirectory.OperatorAVSRegistrationStatus.REGISTERED
+            operator,
+            defaultAVS,
+            IAVSDirectory.OperatorAVSRegistrationStatus.REGISTERED
         );
 
         uint256 expiry = type(uint256).max;
 
         cheats.prank(defaultAVS);
-        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature =
-            _getOperatorSignature(delegationSignerPrivateKey, operator, defaultAVS, salt, expiry);
+        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature = _getOperatorSignature(
+            delegationSignerPrivateKey,
+            operator,
+            defaultAVS,
+            salt,
+            expiry
+        );
 
         avsDirectory.registerOperatorToAVS(operator, operatorSignature);
     }
@@ -219,8 +229,13 @@ contract AVSDirectoryUnitTests_operatorAVSRegisterationStatus is AVSDirectoryUni
 
         cheats.prank(defaultAVS);
         uint256 expiry = type(uint256).max;
-        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature =
-            _getOperatorSignature(delegationSignerPrivateKey, operator, defaultAVS, salt, expiry);
+        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature = _getOperatorSignature(
+            delegationSignerPrivateKey,
+            operator,
+            defaultAVS,
+            salt,
+            expiry
+        );
 
         cheats.expectRevert("AVSDirectory.registerOperatorToAVS: operator not registered to EigenLayer yet");
         avsDirectory.registerOperatorToAVS(operator, operatorSignature);
@@ -233,8 +248,13 @@ contract AVSDirectoryUnitTests_operatorAVSRegisterationStatus is AVSDirectoryUni
         _registerOperatorWithBaseDetails(operator);
 
         uint256 expiry = type(uint256).max;
-        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature =
-            _getOperatorSignature(delegationSignerPrivateKey, operator, defaultAVS, salt, expiry);
+        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature = _getOperatorSignature(
+            delegationSignerPrivateKey,
+            operator,
+            defaultAVS,
+            salt,
+            expiry
+        );
 
         cheats.expectRevert("EIP1271SignatureUtils.checkSignature_EIP1271: signature not from signer");
         cheats.prank(operator);
@@ -259,8 +279,13 @@ contract AVSDirectoryUnitTests_operatorAVSRegisterationStatus is AVSDirectoryUni
         _registerOperatorWithBaseDetails(operator);
 
         uint256 expiry = type(uint256).max;
-        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature =
-            _getOperatorSignature(delegationSignerPrivateKey, operator, defaultAVS, salt, expiry);
+        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature = _getOperatorSignature(
+            delegationSignerPrivateKey,
+            operator,
+            defaultAVS,
+            salt,
+            expiry
+        );
 
         cheats.startPrank(defaultAVS);
         avsDirectory.registerOperatorToAVS(operator, operatorSignature);
@@ -283,10 +308,15 @@ contract AVSDirectoryUnitTests_operatorAVSRegisterationStatus is AVSDirectoryUni
         avsDirectory.cancelSalt(salt);
 
         assertTrue(avsDirectory.operatorSaltIsSpent(operator, salt), "salt was not successfully cancelled");
-        assertFalse(avsDirectory.operatorSaltIsSpent(defaultAVS, salt), "salt should only be cancelled for the operator");
+        assertFalse(
+            avsDirectory.operatorSaltIsSpent(defaultAVS, salt),
+            "salt should only be cancelled for the operator"
+        );
 
-        bytes32 newSalt; 
-        unchecked { newSalt = bytes32(uint(salt) + 1); }
+        bytes32 newSalt;
+        unchecked {
+            newSalt = bytes32(uint(salt) + 1);
+        }
 
         assertFalse(salt == newSalt, "bad test setup");
 
@@ -304,8 +334,13 @@ contract AVSDirectoryUnitTests_operatorAVSRegisterationStatus is AVSDirectoryUni
         _registerOperatorWithBaseDetails(operator);
 
         uint256 expiry = type(uint256).max;
-        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature =
-            _getOperatorSignature(delegationSignerPrivateKey, operator, defaultAVS, salt, expiry);
+        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature = _getOperatorSignature(
+            delegationSignerPrivateKey,
+            operator,
+            defaultAVS,
+            salt,
+            expiry
+        );
 
         cheats.prank(operator);
         avsDirectory.cancelSalt(salt);
@@ -340,8 +375,13 @@ contract AVSDirectoryUnitTests_operatorAVSRegisterationStatus is AVSDirectoryUni
         _registerOperatorWithBaseDetails(operator);
 
         uint256 expiry = type(uint256).max;
-        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature =
-            _getOperatorSignature(delegationSignerPrivateKey, operator, defaultAVS, salt, expiry);
+        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature = _getOperatorSignature(
+            delegationSignerPrivateKey,
+            operator,
+            defaultAVS,
+            salt,
+            expiry
+        );
 
         cheats.prank(defaultAVS);
         avsDirectory.registerOperatorToAVS(operator, operatorSignature);

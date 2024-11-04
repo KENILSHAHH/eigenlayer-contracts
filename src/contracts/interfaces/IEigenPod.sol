@@ -3,7 +3,7 @@ pragma solidity >=0.5.0;
 
 import "../libraries/BeaconChainProofs.sol";
 import "./IEigenPodManager.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @title The implementation contract used for restaking beacon chain ETH on EigenLayer
@@ -22,7 +22,6 @@ interface IEigenPod {
         INACTIVE, // doesnt exist
         ACTIVE, // staked on ethpos and withdrawal credentials are pointed to the EigenPod
         WITHDRAWN // withdrawn from the Beacon Chain
-
     }
 
     struct ValidatorInfo {
@@ -70,7 +69,9 @@ interface IEigenPod {
 
     /// @notice Emitted when a checkpoint is created
     event CheckpointCreated(
-        uint64 indexed checkpointTimestamp, bytes32 indexed beaconBlockRoot, uint256 validatorCount
+        uint64 indexed checkpointTimestamp,
+        bytes32 indexed beaconBlockRoot,
+        uint256 validatorCount
     );
 
     /// @notice Emitted when a checkpoint is finalized

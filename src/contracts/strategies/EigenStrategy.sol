@@ -2,7 +2,7 @@
 pragma solidity ^0.8.12;
 
 // NOTE: Mainnet uses the OpenZeppelin v4.9.0 contracts, but this imports the 4.7.1 version. This will be changed after an upgrade.
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "../interfaces/IStrategyManager.sol";
 import "../strategies/StrategyBase.sol";
 import "../interfaces/IEigen.sol";
@@ -67,11 +67,14 @@ contract EigenStrategy is StrategyBase {
      * @param token token to be withdrawn, can be either EIGEN or bEIGEN. If EIGEN, then bEIGEN is wrapped into EIGEN
      */
     function _beforeWithdrawal(
-        address, /*recipient*/
+        address /*recipient*/,
         IERC20 token,
         uint256 /*amountShares*/
     ) internal virtual override {
-        require(token == underlyingToken || token == EIGEN, "EigenStrategy.withdraw: Can only withdraw bEIGEN or EIGEN");
+        require(
+            token == underlyingToken || token == EIGEN,
+            "EigenStrategy.withdraw: Can only withdraw bEIGEN or EIGEN"
+        );
     }
 
     /**

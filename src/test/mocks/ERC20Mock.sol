@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/interfaces/IERC20.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
+import "openzeppelin/contracts/interfaces/IERC20.sol";
+import "openzeppelin/contracts/utils/Context.sol";
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -53,7 +53,7 @@ contract ERC20Mock is Context, IERC20 {
     function decimals() external pure returns (uint8) {
         return 18;
     }
-    
+
     /**
      * @dev See {IERC20-totalSupply}.
      */
@@ -246,7 +246,6 @@ contract ERC20Mock is Context, IERC20 {
             require(currentAllowance >= amount, "ERC20: insufficient allowance");
         }
     }
-
 
     /**
      * @dev Hook that is called before any transfer of tokens. This includes

@@ -4,7 +4,7 @@ pragma solidity ^0.8.12;
 import {MultisigCall, MultisigCallUtils, MultisigBuilder} from "zeus-templates/templates/MultisigBuilder.sol";
 import {SafeTx, SafeTxUtils} from "zeus-templates/utils/SafeTxUtils.sol";
 
-import {ProxyAdmin} from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import {ProxyAdmin} from "openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 import {IUpgradeableBeacon} from "script/interfaces/IUpgradeableBeacon.sol";
 import {ITimelock} from "zeus-templates/interfaces/ITimelock.sol";
 import "src/contracts/pods/EigenPodManager.sol";
@@ -54,7 +54,12 @@ contract QueueEigenPodAndManager is MultisigBuilder {
 
         // encode executor data for timelock
         bytes memory timelockCalldata = abi.encodeWithSelector(
-            ITimelock.queueTransaction.selector, _executorMultisig(), 0, "", executorCalldata, type(uint256).max
+            ITimelock.queueTransaction.selector,
+            _executorMultisig(),
+            0,
+            "",
+            executorCalldata,
+            type(uint256).max
         );
 
         _opsCalls.append(_timelock(), timelockCalldata);

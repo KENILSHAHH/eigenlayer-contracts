@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/mocks/ERC1271WalletMock.sol";
+import "openzeppelin/contracts/mocks/ERC1271WalletMock.sol";
 import "src/contracts/core/StrategyManager.sol";
 import "src/contracts/strategies/StrategyBase.sol";
 import "src/contracts/permissions/PauserRegistry.sol";
@@ -154,7 +154,15 @@ contract StrategyManagerUnitTests is EigenLayerUnitTestSetup, IStrategyManagerEv
 
         {
             bytes32 structHash = keccak256(
-                abi.encode(strategyManager.DEPOSIT_TYPEHASH(), staker, dummyStrat, dummyToken, amount, nonceBefore, expiry)
+                abi.encode(
+                    strategyManager.DEPOSIT_TYPEHASH(),
+                    staker,
+                    dummyStrat,
+                    dummyToken,
+                    amount,
+                    nonceBefore,
+                    expiry
+                )
             );
             bytes32 digestHash = keccak256(abi.encodePacked("\x19\x01", strategyManager.domainSeparator(), structHash));
 
@@ -639,7 +647,15 @@ contract StrategyManagerUnitTests_depositIntoStrategyWithSignature is StrategyMa
 
         {
             bytes32 structHash = keccak256(
-                abi.encode(strategyManager.DEPOSIT_TYPEHASH(), staker, dummyStrat, revertToken, amount, nonceBefore, expiry)
+                abi.encode(
+                    strategyManager.DEPOSIT_TYPEHASH(),
+                    staker,
+                    dummyStrat,
+                    revertToken,
+                    amount,
+                    nonceBefore,
+                    expiry
+                )
             );
             bytes32 digestHash = keccak256(abi.encodePacked("\x19\x01", strategyManager.domainSeparator(), structHash));
 
@@ -694,7 +710,6 @@ contract StrategyManagerUnitTests_depositIntoStrategyWithSignature is StrategyMa
         IStrategy[] memory _strategy = new IStrategy[](1);
         bool[] memory _thirdPartyTransfersForbiddenValues = new bool[](1);
 
-        
         _strategy[0] = IStrategy(address(reenterer));
         for (uint256 i = 0; i < _strategy.length; ++i) {
             cheats.expectEmit(true, true, true, true, address(strategyManager));
@@ -786,7 +801,7 @@ contract StrategyManagerUnitTests_depositIntoStrategyWithSignature is StrategyMa
             memory expectedRevertMessage = "StrategyManager.onlyStrategiesWhitelistedForDeposit: strategy not whitelisted";
         _depositIntoStrategyWithSignature(staker, amount, type(uint256).max, expectedRevertMessage);
     }
-    
+
     function testFuzz_Revert_WhenThirdPartyTransfersForbidden(uint256 amount, uint256 expiry) public {
         // min shares must be minted on strategy
         cheats.assume(amount >= 1);
@@ -796,7 +811,8 @@ contract StrategyManagerUnitTests_depositIntoStrategyWithSignature is StrategyMa
 
         address staker = cheats.addr(privateKey);
         // not expecting a revert, so input an empty string
-        string memory expectedRevertMessage = "StrategyManager.depositIntoStrategyWithSignature: third transfers disabled";
+        string
+            memory expectedRevertMessage = "StrategyManager.depositIntoStrategyWithSignature: third transfers disabled";
         _depositIntoStrategyWithSignature(staker, amount, expiry, expectedRevertMessage);
     }
 }

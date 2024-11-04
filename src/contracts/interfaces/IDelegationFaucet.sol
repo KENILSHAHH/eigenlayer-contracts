@@ -3,7 +3,7 @@ pragma solidity >=0.5.0;
 
 import "src/contracts/interfaces/IDelegationManager.sol";
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface IDelegationFaucet {
     function mintDepositAndDelegate(

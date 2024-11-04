@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetFixedSupply.sol";
-import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
+import "openzeppelin/contracts/token/ERC20/presets/ERC20PresetFixedSupply.sol";
+import "openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
 
 import "src/contracts/strategies/StrategyFactory.sol";
 import "src/test/utils/EigenLayerUnitTestSetup.sol";
@@ -37,7 +37,7 @@ contract StrategyFactoryUnitTests is EigenLayerUnitTestSetup {
 
     event TokenBlacklisted(IERC20 token);
 
-    function setUp() virtual override public {
+    function setUp() public virtual override {
         EigenLayerUnitTestSetup.setUp();
 
         address[] memory pausers = new address[](1);
@@ -58,7 +58,8 @@ contract StrategyFactoryUnitTests is EigenLayerUnitTestSetup {
                 new TransparentUpgradeableProxy(
                     address(strategyFactoryImplementation),
                     address(eigenLayerProxyAdmin),
-                    abi.encodeWithSelector(StrategyFactory.initialize.selector,
+                    abi.encodeWithSelector(
+                        StrategyFactory.initialize.selector,
                         initialOwner,
                         pauserRegistry,
                         initialPausedStatus,
@@ -91,8 +92,16 @@ contract StrategyFactoryUnitTests is EigenLayerUnitTestSetup {
             "constructor / initializer incorrect, pauserRegistry set wrong"
         );
         assertEq(strategyFactory.owner(), initialOwner, "constructor / initializer incorrect, owner set wrong");
-        assertEq(strategyFactory.paused(), initialPausedStatus, "constructor / initializer incorrect, paused status set wrong");
-        assertEq(strategyBeacon.owner(), beaconProxyOwner, "constructor / initializer incorrect, beaconProxyOwner set wrong");
+        assertEq(
+            strategyFactory.paused(),
+            initialPausedStatus,
+            "constructor / initializer incorrect, paused status set wrong"
+        );
+        assertEq(
+            strategyBeacon.owner(),
+            beaconProxyOwner,
+            "constructor / initializer incorrect, beaconProxyOwner set wrong"
+        );
     }
 
     function test_initialize_revert_reinitialization() public {
@@ -110,13 +119,22 @@ contract StrategyFactoryUnitTests is EigenLayerUnitTestSetup {
         // StrategySetForToken(underlyingToken, newStrategy);
         StrategyBase newStrategy = StrategyBase(address(strategyFactory.deployNewStrategy(underlyingToken)));
 
-        require(strategyFactory.deployedStrategies(underlyingToken) == newStrategy, "deployedStrategies mapping not set correctly");
+        require(
+            strategyFactory.deployedStrategies(underlyingToken) == newStrategy,
+            "deployedStrategies mapping not set correctly"
+        );
         require(newStrategy.strategyManager() == strategyManagerMock, "strategyManager not set correctly");
-        require(strategyBeacon.implementation() == address(strategyImplementation), "strategyImplementation not set correctly");
+        require(
+            strategyBeacon.implementation() == address(strategyImplementation),
+            "strategyImplementation not set correctly"
+        );
         require(newStrategy.pauserRegistry() == pauserRegistry, "pauserRegistry not set correctly");
         require(newStrategy.underlyingToken() == underlyingToken, "underlyingToken not set correctly");
         require(strategyManagerMock.strategyIsWhitelistedForDeposit(newStrategy), "underlyingToken is not whitelisted");
-        require(!strategyManagerMock.thirdPartyTransfersForbidden(newStrategy), "newStrategy has 3rd party transfers forbidden");
+        require(
+            !strategyManagerMock.thirdPartyTransfersForbidden(newStrategy),
+            "newStrategy has 3rd party transfers forbidden"
+        );
     }
 
     function test_deployNewStrategy_revert_StrategyAlreadyExists() public {
@@ -149,10 +167,10 @@ contract StrategyFactoryUnitTests is EigenLayerUnitTestSetup {
         vm.prank(strategyFactory.owner());
         cheats.expectEmit(true, false, false, false, address(strategyFactory));
         emit TokenBlacklisted(underlyingToken);
-        cheats.expectCall(address(strategyManagerMock), abi.encodeWithSelector(
-            strategyManagerMock.removeStrategiesFromDepositWhitelist.selector,
-            toRemove
-        ));
+        cheats.expectCall(
+            address(strategyManagerMock),
+            abi.encodeWithSelector(strategyManagerMock.removeStrategiesFromDepositWhitelist.selector, toRemove)
+        );
         strategyFactory.blacklistTokens(tokens);
     }
 
@@ -165,7 +183,10 @@ contract StrategyFactoryUnitTests is EigenLayerUnitTestSetup {
         strategyFactory.whitelistStrategies(strategiesToWhitelist, thirdPartyTransfersForbiddenValues);
 
         assertTrue(strategyManagerMock.strategyIsWhitelistedForDeposit(strategy), "Strategy not whitelisted");
-        require(strategyManagerMock.thirdPartyTransfersForbidden(strategy), "3rd party transfers forbidden not set correctly");
+        require(
+            strategyManagerMock.thirdPartyTransfersForbidden(strategy),
+            "3rd party transfers forbidden not set correctly"
+        );
     }
 
     function test_whitelistStrategies_revert_notOwner() public {
@@ -206,19 +227,22 @@ contract StrategyFactoryUnitTests is EigenLayerUnitTestSetup {
         strategiesToRemove[0] = IStrategy(_deployStrategy());
 
         strategyFactory.removeStrategiesFromWhitelist(strategiesToRemove);
-        assertFalse(strategyManagerMock.strategyIsWhitelistedForDeposit(strategiesToRemove[0]), "Strategy not removed from whitelist");
+        assertFalse(
+            strategyManagerMock.strategyIsWhitelistedForDeposit(strategiesToRemove[0]),
+            "Strategy not removed from whitelist"
+        );
     }
 
-
     function _deployStrategy() internal returns (StrategyBase) {
-        return StrategyBase(
-            address(
-                new TransparentUpgradeableProxy(
-                    address(strategyImplementation),
-                    address(eigenLayerProxyAdmin),
-                    abi.encodeWithSelector(StrategyBase.initialize.selector, underlyingToken, pauserRegistry)
+        return
+            StrategyBase(
+                address(
+                    new TransparentUpgradeableProxy(
+                        address(strategyImplementation),
+                        address(eigenLayerProxyAdmin),
+                        abi.encodeWithSelector(StrategyBase.initialize.selector, underlyingToken, pauserRegistry)
+                    )
                 )
-            )
-        );
+            );
     }
 }

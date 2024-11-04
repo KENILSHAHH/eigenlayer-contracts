@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 //small library for dealing with efficiently-packed signatures, where parameters v,r,s are packed into vs and r (64 bytes instead of 65)
 library SignatureCompaction {

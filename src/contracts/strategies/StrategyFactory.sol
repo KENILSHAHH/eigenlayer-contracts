@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
+import "openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
 import "./StrategyFactoryStorage.sol";
 import "./StrategyBase.sol";

@@ -1,15 +1,22 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetFixedSupply.sol";
+import "openzeppelin/contracts/token/ERC20/presets/ERC20PresetFixedSupply.sol";
 
 contract ERC20_SetTransferReverting_Mock is ERC20PresetFixedSupply {
-
     bool public transfersRevert;
 
-    constructor(uint256 initSupply, address initOwner) 
-        ERC20PresetFixedSupply("ERC20_SetTransferReverting_Mock", "ERC20_SetTransferReverting_Mock", initSupply, initOwner)
-        {}
+    constructor(
+        uint256 initSupply,
+        address initOwner
+    )
+        ERC20PresetFixedSupply(
+            "ERC20_SetTransferReverting_Mock",
+            "ERC20_SetTransferReverting_Mock",
+            initSupply,
+            initOwner
+        )
+    {}
 
     function setTransfersRevert(bool _transfersRevert) public {
         transfersRevert = _transfersRevert;
@@ -22,5 +29,4 @@ contract ERC20_SetTransferReverting_Mock is ERC20PresetFixedSupply {
             // revert("ERC20_SetTransferReverting_Mock._beforeTokenTransfer: transfersRevert set");
         }
     }
-
 }

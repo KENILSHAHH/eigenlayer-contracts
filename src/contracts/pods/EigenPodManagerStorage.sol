@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
+import "openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 
 import "../interfaces/IStrategy.sol";
 import "../interfaces/IEigenPodManager.sol";

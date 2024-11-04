@@ -3,8 +3,8 @@ pragma solidity ^0.8.12;
 
 import "forge-std/Test.sol";
 
-import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
-import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import "openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import "openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import "../harnesses/EigenHarness.sol";
 
 import "../../contracts/token/BackingEigen.sol";
@@ -82,8 +82,7 @@ contract EigenWrappingTests is Test {
         // initial bEIGEN balance
         uint256 initialBEIGENBalanceOfEigenToken = bEIGEN.balanceOf(address(eigen));
         // initial EIGEN token supply
-        assertEq(eigen.totalSupply(), bEIGEN.totalSupply(),
-            "eigen totalSupply changed incorrectly");
+        assertEq(eigen.totalSupply(), bEIGEN.totalSupply(), "eigen totalSupply changed incorrectly");
 
         // unwrap
         // unwrap amount should be less than minter1 balance
@@ -92,10 +91,12 @@ contract EigenWrappingTests is Test {
         eigen.unwrap(unwrapAmount);
 
         // check total supply and balance changes
-        assertEq(eigen.totalSupply(), bEIGEN.totalSupply(),
-            "eigen totalSupply changed incorrectly");
-        assertEq(bEIGEN.balanceOf(address(eigen)), initialBEIGENBalanceOfEigenToken - unwrapAmount,
-            "beigen balance of EIGEN tokens changed incorrectly");
+        assertEq(eigen.totalSupply(), bEIGEN.totalSupply(), "eigen totalSupply changed incorrectly");
+        assertEq(
+            bEIGEN.balanceOf(address(eigen)),
+            initialBEIGENBalanceOfEigenToken - unwrapAmount,
+            "beigen balance of EIGEN tokens changed incorrectly"
+        );
         assertEq(eigen.balanceOf(address(unwrapper)), minter1Balance - unwrapAmount);
         assertEq(bEIGEN.balanceOf(address(unwrapper)), unwrapAmount);
     }
@@ -120,8 +121,7 @@ contract EigenWrappingTests is Test {
         vm.stopPrank();
 
         // initial EIGEN token supply
-        assertEq(eigen.totalSupply(), bEIGEN.totalSupply(),
-            "eigen totalSupply changed incorrectly");
+        assertEq(eigen.totalSupply(), bEIGEN.totalSupply(), "eigen totalSupply changed incorrectly");
 
         // wrap
         // wrap amount should be less than minter1 balance
@@ -134,8 +134,7 @@ contract EigenWrappingTests is Test {
         vm.stopPrank();
 
         // check total supply and balance changes
-        assertEq(eigen.totalSupply(), bEIGEN.totalSupply(),
-            "eigen totalSupply changed incorrectly");
+        assertEq(eigen.totalSupply(), bEIGEN.totalSupply(), "eigen totalSupply changed incorrectly");
         assertEq(bEIGEN.balanceOf(address(eigen)), initialBEIGENBalanceOfEigenToken - minter1Balance + wrapAmount);
         assertEq(eigen.balanceOf(address(wrapper)), wrapAmount);
         assertEq(bEIGEN.balanceOf(address(wrapper)), minter1Balance - wrapAmount);
@@ -203,6 +202,5 @@ contract EigenWrappingTests is Test {
         vm.startPrank(minter1);
         bEIGEN.setAllowedFrom(minter1, true);
         vm.stopPrank();
-
     }
 }

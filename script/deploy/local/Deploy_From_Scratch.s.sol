@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetFixedSupply.sol";
-import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
-import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
-import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
+import "openzeppelin/contracts/token/ERC20/presets/ERC20PresetFixedSupply.sol";
+import "openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import "openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import "openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
 
 import "../../../src/contracts/interfaces/IETHPOSDeposit.sol";
 
@@ -124,12 +124,22 @@ contract DeployFromScratch is Script, Test {
         REWARDS_COORDINATOR_CALCULATION_INTERVAL_SECONDS = uint32(
             stdJson.readUint(config_data, ".rewardsCoordinator.CALCULATION_INTERVAL_SECONDS")
         );
-        REWARDS_COORDINATOR_MAX_REWARDS_DURATION = uint32(stdJson.readUint(config_data, ".rewardsCoordinator.MAX_REWARDS_DURATION"));
-        REWARDS_COORDINATOR_MAX_RETROACTIVE_LENGTH = uint32(stdJson.readUint(config_data, ".rewardsCoordinator.MAX_RETROACTIVE_LENGTH"));
-        REWARDS_COORDINATOR_MAX_FUTURE_LENGTH = uint32(stdJson.readUint(config_data, ".rewardsCoordinator.MAX_FUTURE_LENGTH"));
-        REWARDS_COORDINATOR_GENESIS_REWARDS_TIMESTAMP = uint32(stdJson.readUint(config_data, ".rewardsCoordinator.GENESIS_REWARDS_TIMESTAMP"));
+        REWARDS_COORDINATOR_MAX_REWARDS_DURATION = uint32(
+            stdJson.readUint(config_data, ".rewardsCoordinator.MAX_REWARDS_DURATION")
+        );
+        REWARDS_COORDINATOR_MAX_RETROACTIVE_LENGTH = uint32(
+            stdJson.readUint(config_data, ".rewardsCoordinator.MAX_RETROACTIVE_LENGTH")
+        );
+        REWARDS_COORDINATOR_MAX_FUTURE_LENGTH = uint32(
+            stdJson.readUint(config_data, ".rewardsCoordinator.MAX_FUTURE_LENGTH")
+        );
+        REWARDS_COORDINATOR_GENESIS_REWARDS_TIMESTAMP = uint32(
+            stdJson.readUint(config_data, ".rewardsCoordinator.GENESIS_REWARDS_TIMESTAMP")
+        );
         REWARDS_COORDINATOR_UPDATER = stdJson.readAddress(config_data, ".rewardsCoordinator.rewards_updater_address");
-        REWARDS_COORDINATOR_ACTIVATION_DELAY = uint32(stdJson.readUint(config_data, ".rewardsCoordinator.activation_delay"));
+        REWARDS_COORDINATOR_ACTIVATION_DELAY = uint32(
+            stdJson.readUint(config_data, ".rewardsCoordinator.activation_delay")
+        );
         REWARDS_COORDINATOR_CALCULATION_INTERVAL_SECONDS = uint32(
             stdJson.readUint(config_data, ".rewardsCoordinator.calculation_interval_seconds")
         );
@@ -206,11 +216,7 @@ contract DeployFromScratch is Script, Test {
         } else {
             ethPOSDeposit = IETHPOSDeposit(stdJson.readAddress(config_data, ".ethPOSDepositAddress"));
         }
-        eigenPodImplementation = new EigenPod(
-            ethPOSDeposit,
-            eigenPodManager,
-            GOERLI_GENESIS_TIME
-        );
+        eigenPodImplementation = new EigenPod(ethPOSDeposit, eigenPodManager, GOERLI_GENESIS_TIME);
 
         eigenPodBeacon = new UpgradeableBeacon(address(eigenPodImplementation));
 
@@ -309,7 +315,9 @@ contract DeployFromScratch is Script, Test {
         // create upgradeable proxies that each point to the implementation and initialize them
         for (uint256 i = 0; i < strategyConfigs.length; ++i) {
             if (strategyConfigs[i].tokenAddress == address(0)) {
-                strategyConfigs[i].tokenAddress = address(new ERC20PresetFixedSupply("TestToken", "TEST", uint256(type(uint128).max), executorMultisig));
+                strategyConfigs[i].tokenAddress = address(
+                    new ERC20PresetFixedSupply("TestToken", "TEST", uint256(type(uint128).max), executorMultisig)
+                );
             }
             deployedStrategyArray.push(
                 StrategyBaseTVLLimits(
@@ -344,13 +352,7 @@ contract DeployFromScratch is Script, Test {
             eigenPodManagerImplementation,
             rewardsCoordinatorImplementation
         );
-        _verifyContractsPointAtOneAnother(
-            delegation,
-            strategyManager,
-            slasher,
-            eigenPodManager,
-            rewardsCoordinator
-        );
+        _verifyContractsPointAtOneAnother(delegation, strategyManager, slasher, eigenPodManager, rewardsCoordinator);
         _verifyImplementationsSetCorrectly();
         _verifyInitialOwners();
         _checkPauserInitializations();
@@ -412,7 +414,8 @@ contract DeployFromScratch is Script, Test {
 
         {
             // dummy token data
-            string memory token = '{"tokenProxyAdmin": "0x0000000000000000000000000000000000000000", "EIGEN": "0x0000000000000000000000000000000000000000","bEIGEN": "0x0000000000000000000000000000000000000000","EIGENImpl": "0x0000000000000000000000000000000000000000","bEIGENImpl": "0x0000000000000000000000000000000000000000","eigenStrategy": "0x0000000000000000000000000000000000000000","eigenStrategyImpl": "0x0000000000000000000000000000000000000000"}';
+            string
+                memory token = '{"tokenProxyAdmin": "0x0000000000000000000000000000000000000000", "EIGEN": "0x0000000000000000000000000000000000000000","bEIGEN": "0x0000000000000000000000000000000000000000","EIGENImpl": "0x0000000000000000000000000000000000000000","bEIGENImpl": "0x0000000000000000000000000000000000000000","eigenStrategy": "0x0000000000000000000000000000000000000000","eigenStrategyImpl": "0x0000000000000000000000000000000000000000"}';
             deployed_addresses_output = vm.serializeString(deployed_addresses, "token", token);
         }
 

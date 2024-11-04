@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./IStrategy.sol";
 
 /**
@@ -153,7 +153,9 @@ interface IRewardsCoordinator {
     /// @notice rewardsUpdater is responsible for submiting DistributionRoots, only owner can set rewardsUpdater
     event RewardsUpdaterSet(address indexed oldRewardsUpdater, address indexed newRewardsUpdater);
     event RewardsForAllSubmitterSet(
-        address indexed rewardsForAllSubmitter, bool indexed oldValue, bool indexed newValue
+        address indexed rewardsForAllSubmitter,
+        bool indexed oldValue,
+        bool indexed newValue
     );
     event ActivationDelaySet(uint32 oldActivationDelay, uint32 newActivationDelay);
     event GlobalCommissionBipsSet(uint16 oldGlobalCommissionBips, uint16 newGlobalCommissionBips);

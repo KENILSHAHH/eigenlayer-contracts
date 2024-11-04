@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetFixedSupply.sol";
-import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
-import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
-import "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
-import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
+import "openzeppelin/contracts/token/ERC20/presets/ERC20PresetFixedSupply.sol";
+import "openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import "openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import "openzeppelin/contracts/proxy/beacon/IBeacon.sol";
+import "openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
 
 import "../contracts/interfaces/IDelegationManager.sol";
 import "../contracts/core/DelegationManager.sol";
@@ -98,7 +98,6 @@ contract EigenLayerDeployer is Operators {
     address operationsMultisig;
     address executorMultisig;
 
-
     // addresses excluded from fuzzing due to abnormal behavior. TODO: @Sidu28 define this better and give it a clearer name
     mapping(address => bool) fuzzedAddressMapping;
 
@@ -161,11 +160,7 @@ contract EigenLayerDeployer is Operators {
             address(new TransparentUpgradeableProxy(address(emptyContract), address(eigenLayerProxyAdmin), ""))
         );
         ethPOSDeposit = new ETHPOSDepositMock();
-        pod = new EigenPod(
-            ethPOSDeposit,
-            eigenPodManager,
-            GOERLI_GENESIS_TIME
-        );
+        pod = new EigenPod(ethPOSDeposit, eigenPodManager, GOERLI_GENESIS_TIME);
 
         eigenPodBeacon = new UpgradeableBeacon(address(pod));
 
