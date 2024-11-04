@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.12;
 
-import "@openzeppelin-v4.9.0/contracts/token/ERC20/IERC20.sol";
-import "openzeppelin-upgrades-v4.9.0/contracts/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
-import "openzeppelin-upgrades-v4.9.0/contracts/access/OwnableUpgradeable.sol";
+import "openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "openzeppelin-upgrades/contracts/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
+import "openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
 
 contract BackingEigen is OwnableUpgradeable, ERC20VotesUpgradeable {
     /// CONSTANTS & IMMUTABLES
@@ -121,7 +121,7 @@ contract BackingEigen is OwnableUpgradeable, ERC20VotesUpgradeable {
      * @dev Clock used for flagging checkpoints. Has been overridden to implement timestamp based
      * checkpoints (and voting).
      */
-    function clock() public view override returns (uint48) {
+    function clock() public view  returns (uint48) {
         return SafeCastUpgradeable.toUint48(block.timestamp);
     }
 
@@ -130,7 +130,7 @@ contract BackingEigen is OwnableUpgradeable, ERC20VotesUpgradeable {
      * Has been overridden to inform callers that this contract uses timestamps instead of block numbers, to match `clock()`
      */
     // solhint-disable-next-line func-name-mixedcase
-    function CLOCK_MODE() public pure override returns (string memory) {
+    function CLOCK_MODE() public pure  returns (string memory) {
         return "mode=timestamp";
     }
 
